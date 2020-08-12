@@ -14,18 +14,15 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+
+import static com.falconcamp.cloud.rms.domain.service.ReservationService.MAX_RESERV_DAYS;
+import static com.falconcamp.cloud.rms.domain.service.mappers.DateTimeMapper.DEFAULT_ZONE_OFFSET;
 
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class RmsBootstrap implements CommandLineRunner {
-
-    public static final ZoneOffset DEFAULT_ZONE_OFFSET =
-            OffsetDateTime.now().getOffset();
-
-    public static final int MAX_RESERV_DAYS = 3;
 
     private final IReservationRepository reservationRepository;
 
