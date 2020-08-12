@@ -55,6 +55,7 @@ public class Reservation implements Comparable<Reservation> {
     private OffsetDateTime startDateTime;
 
     private OffsetDateTime arrivalDateTime;
+
     private OffsetDateTime detatureDateTime;
 
     private int days;
