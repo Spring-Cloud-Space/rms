@@ -37,7 +37,23 @@ public class RmsBootstrap implements CommandLineRunner {
 
     private void loadExistingReservations() {
 
+        // August
         OffsetDateTime startDateTime = OffsetDateTime.of(
+                LocalDateTime.of(2020, Month.AUGUST, 22,
+                        0, 0, 0), DEFAULT_ZONE_OFFSET);
+
+        Reservation reserv0 = Reservation.builder()
+                .email("bill.gates@microsoft.com")
+                .fullName("Bill Gates")
+                .startDateTime(startDateTime)
+                .arrivalDateTime(startDateTime.minusDays(1))
+                .days(MAX_RESERV_DAYS - 1)
+                .detatureDateTime(startDateTime.plusDays(MAX_RESERV_DAYS - 1))
+                .build();
+        this.reservationRepository.save(reserv0);
+
+        // September
+        startDateTime = OffsetDateTime.of(
                 LocalDateTime.of(2020, Month.SEPTEMBER, 5,
                         0, 0, 0), DEFAULT_ZONE_OFFSET);
 
@@ -49,6 +65,7 @@ public class RmsBootstrap implements CommandLineRunner {
                 .days(MAX_RESERV_DAYS)
                 .detatureDateTime(startDateTime.plusDays(MAX_RESERV_DAYS))
                 .build();
+
         this.reservationRepository.save(reserv1);
 
         startDateTime = startDateTime.plusDays(10);

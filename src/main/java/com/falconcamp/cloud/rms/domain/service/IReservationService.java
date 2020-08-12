@@ -5,14 +5,15 @@ package com.falconcamp.cloud.rms.domain.service;
 
 
 import com.falconcamp.cloud.rms.domain.model.Reservation;
+import com.falconcamp.cloud.rms.domain.service.dto.ReservationDto;
 
 import java.util.List;
 
 
 public interface IReservationService {
 
-    Reservation save(Reservation reservation);
+    ReservationDto save(Reservation reservation);
 
-    List<Reservation> findAllReservations();
+    List<ReservationDto> findAllReservations();
 
 }///:~
