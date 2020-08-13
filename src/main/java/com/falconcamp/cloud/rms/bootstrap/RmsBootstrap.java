@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.OffsetDateTime;
 
-import static com.falconcamp.cloud.rms.domain.service.ReservationService.MAX_RESERV_DAYS;
-import static com.falconcamp.cloud.rms.domain.service.mappers.DateTimeMapper.DEFAULT_ZONE_OFFSET;
+import static com.falconcamp.cloud.rms.domain.service.dto.CampDay.DEFAULT_ZONE_OFFSET;
+import static com.falconcamp.cloud.rms.domain.service.dto.CampDay.MAX_RESERV_DAYS;
 
 
 @Slf4j

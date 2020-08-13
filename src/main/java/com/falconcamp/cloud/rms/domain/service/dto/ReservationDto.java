@@ -15,8 +15,8 @@ import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import static com.falconcamp.cloud.rms.domain.service.ReservationService.MIN_RESERV_DAYS;
-import static com.falconcamp.cloud.rms.domain.service.ReservationService.MAX_RESERV_DAYS;
+import static com.falconcamp.cloud.rms.domain.service.dto.CampDay.MAX_RESERV_DAYS;
+import static com.falconcamp.cloud.rms.domain.service.dto.CampDay.MIN_RESERV_DAYS;
 
 
 @Data

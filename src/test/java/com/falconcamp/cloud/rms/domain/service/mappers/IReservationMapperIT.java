@@ -7,12 +7,8 @@ package com.falconcamp.cloud.rms.domain.service.mappers;
 import com.falconcamp.cloud.rms.domain.model.Reservation;
 import com.falconcamp.cloud.rms.domain.service.dto.ReservationDto;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -22,8 +18,8 @@ import java.time.Month;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import static com.falconcamp.cloud.rms.domain.service.ReservationService.MAX_RESERV_DAYS;
-import static com.falconcamp.cloud.rms.domain.service.mappers.DateTimeMapper.DEFAULT_ZONE_OFFSET;
+import static com.falconcamp.cloud.rms.domain.service.dto.CampDay.DEFAULT_ZONE_OFFSET;
+import static com.falconcamp.cloud.rms.domain.service.dto.CampDay.MAX_RESERV_DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 

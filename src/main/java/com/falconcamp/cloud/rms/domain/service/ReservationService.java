@@ -6,24 +6,30 @@ package com.falconcamp.cloud.rms.domain.service;
 
 import com.falconcamp.cloud.rms.domain.model.Reservation;
 import com.falconcamp.cloud.rms.domain.repository.IReservationRepository;
+import com.falconcamp.cloud.rms.domain.service.dto.ICampDay;
 import com.falconcamp.cloud.rms.domain.service.dto.ReservationDto;
 import com.falconcamp.cloud.rms.domain.service.mappers.IReservationMapper;
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
+
+import static com.falconcamp.cloud.rms.domain.service.dto.ICampDay.DEFAULT_SEARCH_MONTHS;
+import static java.time.temporal.ChronoUnit.DAYS;
 
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class ReservationService implements IReservationService {
-
-    public static final int MIN_RESERV_DAYS = 1;
-    public static final int MAX_RESERV_DAYS = 3;
 
     private final IReservationMapper mapper;
     private final IReservationRepository reservationRepository;
@@ -42,6 +48,42 @@ public class ReservationService implements IReservationService {
         return this.reservationRepository.findAll().stream()
                 .map(this.mapper::reservationToReservationDto)
                 .collect(ImmutableList.toImmutableList());
+    }
+
+    @Override
+    public List<ICampDay> findAvailabilities() {
+
+        OffsetDateTime from = ICampDay.fromTomorrow();
+        OffsetDateTime searchFromDay = ICampDay.asSearchFromDay(from);
+        OffsetDateTime endDay = ICampDay.getSearchEndDay(from, DEFAULT_SEARCH_MONTHS);
+
+        final List<OffsetDateTime> reservedDays = this.getAllReservedDays(
+                searchFromDay, endDay);
+
+        long allDays = DAYS.between(from, endDay);
+
+        return LongStream.range(0, allDays)
+                .mapToObj(i -> from.plusDays(i))
+                .filter(day -> !reservedDays.contains(day))
+                .map(ICampDay::ofAvailable)
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    private List<OffsetDateTime> getAllReservedDays(
+            OffsetDateTime from, OffsetDateTime to) {
+
+        return this.reservationRepository
+                .findAllByStartDateTimeBetween(from, to).stream()
+                .flatMap(this::getReservedDays)
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    private Stream<OffsetDateTime> getReservedDays(
+            @NonNull Reservation reservation) {
+
+        OffsetDateTime startDateTime = reservation.getStartDateTime();
+        return IntStream.range(0, reservation.getDays())
+                .mapToObj(i -> startDateTime.plusDays(i));
     }
 
 }///:~
