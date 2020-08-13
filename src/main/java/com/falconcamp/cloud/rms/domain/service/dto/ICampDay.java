@@ -4,6 +4,10 @@
 package com.falconcamp.cloud.rms.domain.service.dto;
 
 
+import com.falconcamp.cloud.rms.domain.service.IllegalSearchArgumentsException;
+import lombok.NonNull;
+
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
@@ -22,15 +26,15 @@ public interface ICampDay {
     boolean isReserved();
     boolean isAvailable();
 
-    static ICampDay ofAvailable(OffsetDateTime day) {
-        return CampDay.of(Objects.requireNonNull(day), false);
+    static ICampDay ofAvailable(@NonNull OffsetDateTime day) {
+        return CampDay.of(day, false);
     }
 
-    static ICampDay ofReserved(OffsetDateTime day) {
-        return CampDay.of(Objects.requireNonNull(day), true);
+    static ICampDay ofReserved(@NonNull OffsetDateTime day) {
+        return CampDay.of(day, true);
     }
 
-    static OffsetDateTime asStartDay(OffsetDateTime any) {
+    static OffsetDateTime asStartDay(@NonNull OffsetDateTime any) {
         return OffsetDateTime.of(
                 any.getYear(), any.getMonthValue(), any.getDayOfMonth(),
                 0, 0, 0, 0, DEFAULT_ZONE_OFFSET);
@@ -43,21 +47,50 @@ public interface ICampDay {
                 0, 0, 0, 0, DEFAULT_ZONE_OFFSET);
     }
 
-    static OffsetDateTime asSearchFromDay(OffsetDateTime any) {
+    static OffsetDateTime asSearchFromDay(@NonNull OffsetDateTime any) {
         OffsetDateTime from = any.minusDays(MAX_RESERV_DAYS);
         return OffsetDateTime.of(
                 from.getYear(), from.getMonthValue(), from.getDayOfMonth(),
                 0, 0, 0, 0, DEFAULT_ZONE_OFFSET);
     }
 
-    static OffsetDateTime getSearchEndDay(OffsetDateTime any, int months) {
+    static OffsetDateTime getSearchEndDay(@NonNull OffsetDateTime any, int months) {
+
         if (months <= 0) {
-            throw new IllegalArgumentException("[SEARCH] - Illegal months.");
+            months = DEFAULT_SEARCH_MONTHS;
         }
         OffsetDateTime end = any.plusMonths(months);
         return OffsetDateTime.of(
                 end.getYear(), end.getMonthValue(), end.getDayOfMonth(),
                 0, 0, 0, 0, DEFAULT_ZONE_OFFSET);
+    }
+
+    static OffsetDateTime asFromDay(LocalDate date) {
+        return Objects.isNull(date) ? fromTomorrow() : OffsetDateTime.of(
+                date.getYear(), date.getMonthValue(), date.getDayOfMonth(),
+                0, 0, 0, 0, DEFAULT_ZONE_OFFSET);
+    }
+
+    static OffsetDateTime calcEndDay(OffsetDateTime from, LocalDate to) {
+
+        if (Objects.isNull(from)) {
+            from = fromTomorrow();
+        }
+
+        if (Objects.isNull(to)) {
+            return getSearchEndDay(from, DEFAULT_SEARCH_MONTHS);
+        }
+
+        OffsetDateTime endDay = OffsetDateTime.of(
+                to.getYear(), to.getMonthValue(), to.getDayOfMonth(),
+                0, 0, 0, 0, DEFAULT_ZONE_OFFSET);
+
+        if (endDay.isBefore(from)) {
+            throw IllegalSearchArgumentsException.of(
+                    from, endDay, "[SEARCH] - Illegal search boundry.");
+        }
+
+        return endDay;
     }
 
 }///:~

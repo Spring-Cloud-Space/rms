@@ -8,6 +8,7 @@ import com.falconcamp.cloud.rms.domain.model.Reservation;
 import com.falconcamp.cloud.rms.domain.service.dto.ICampDay;
 import com.falconcamp.cloud.rms.domain.service.dto.ReservationDto;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 
@@ -17,6 +18,6 @@ public interface IReservationService {
 
     List<ReservationDto> findAllReservations();
 
-    List<ICampDay> findAvailabilities();
+    List<ICampDay> findAvailabilitiesBetween(OffsetDateTime from, OffsetDateTime to);
 
 }///:~

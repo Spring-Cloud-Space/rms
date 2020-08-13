@@ -22,7 +22,6 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-import static com.falconcamp.cloud.rms.domain.service.dto.ICampDay.DEFAULT_SEARCH_MONTHS;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 
@@ -35,7 +34,7 @@ public class ReservationService implements IReservationService {
     private final IReservationRepository reservationRepository;
 
     @Override
-    public ReservationDto save(Reservation reservation) {
+    public ReservationDto save(@NonNull Reservation reservation) {
 
         Reservation savedReservation = this.reservationRepository.save(
                 Objects.requireNonNull(reservation));
@@ -51,16 +50,15 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    public List<ICampDay> findAvailabilities() {
+    public List<ICampDay> findAvailabilitiesBetween(
+            OffsetDateTime from, OffsetDateTime to) {
 
-        OffsetDateTime from = ICampDay.fromTomorrow();
         OffsetDateTime searchFromDay = ICampDay.asSearchFromDay(from);
-        OffsetDateTime endDay = ICampDay.getSearchEndDay(from, DEFAULT_SEARCH_MONTHS);
 
         final List<OffsetDateTime> reservedDays = this.getAllReservedDays(
-                searchFromDay, endDay);
+                searchFromDay, to);
 
-        long allDays = DAYS.between(from, endDay);
+        long allDays = DAYS.between(from, to);
 
         return LongStream.range(0, allDays)
                 .mapToObj(i -> from.plusDays(i))

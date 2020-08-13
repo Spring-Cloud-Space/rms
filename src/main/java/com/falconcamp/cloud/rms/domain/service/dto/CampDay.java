@@ -5,17 +5,20 @@ package com.falconcamp.cloud.rms.domain.service.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Objects;
 
 
 @Getter
 @Setter
+@ToString
+@EqualsAndHashCode
 public final class CampDay implements ICampDay, Comparable<CampDay> {
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ", shape = JsonFormat.Shape.STRING)
@@ -35,19 +38,6 @@ public final class CampDay implements ICampDay, Comparable<CampDay> {
 
     static ICampDay of(OffsetDateTime day, boolean reserved) {
         return new CampDay(Objects.requireNonNull(day), reserved);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CampDay campDay = (CampDay) o;
-        return Objects.equals(day, campDay.day);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(day);
     }
 
     @Override
