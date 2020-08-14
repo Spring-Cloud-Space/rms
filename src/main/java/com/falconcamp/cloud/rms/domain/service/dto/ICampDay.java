@@ -87,7 +87,7 @@ public interface ICampDay {
 
         if (endDay.isBefore(from)) {
             throw IllegalSearchArgumentsException.of(
-                    from, endDay, "[SEARCH] - Illegal search boundry.");
+                    from, endDay, "Illegal search boundry.");
         }
 
         return endDay;

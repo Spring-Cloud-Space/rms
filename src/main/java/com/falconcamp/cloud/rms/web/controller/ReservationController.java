@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -32,7 +33,13 @@ public class ReservationController {
 
     @GetMapping(path = "/resv", produces = {"application/json"})
     public ResponseEntity<List<ReservationDto>> listReservations() {
+
         List<ReservationDto> resvList = this.reservationService.findAllReservations();
+
+        if (resvList.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Reservation Found.");
+        }
+
         return new ResponseEntity<>(resvList, HttpStatus.OK);
     }
 
@@ -50,6 +57,12 @@ public class ReservationController {
                 .findAvailabilitiesBetween(fromDateTime, toDateTime);
 
         log.debug(">>>>>>> {} days are available.", availList.size());
+
+        if (availList.isEmpty()) {
+            String msg = String.format(
+                    "The camp site is not available between %s to %s.", from, to);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, msg);
+        }
 
         return new ResponseEntity<>(availList, HttpStatus.OK);
     }
