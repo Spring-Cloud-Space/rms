@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface IReservationService {
 
-    ReservationDto save(Reservation reservation);
+    ReservationDto save(ReservationDto reservationDtto);
 
     List<ReservationDto> findAllReservations();
 

@@ -12,12 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -65,6 +63,20 @@ public class ReservationController {
         }
 
         return new ResponseEntity<>(availList, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/resv")
+    public ResponseEntity<String> saveNewReservation(
+            @Valid @RequestBody ReservationDto reservationDto) {
+
+        String newReservationId = this.reservationService.save(reservationDto)
+                .getId()
+                .toString();
+
+        String responseMessage = String.format(
+                "Your new reservation ID is '%s'", newReservationId);
+
+        return new ResponseEntity(responseMessage, HttpStatus.CREATED);
     }
 
 }///:~

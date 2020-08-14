@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -34,14 +35,17 @@ public class ReservationService implements IReservationService {
     private final IReservationRepository reservationRepository;
 
     @Override
-    public ReservationDto save(@NonNull Reservation reservation) {
-
+    @Transactional
+    public ReservationDto save(ReservationDto reservationDto) {
+        Reservation reservation = this.mapper.reservationDtoToReservation(
+                reservationDto);
         Reservation savedReservation = this.reservationRepository.save(
                 Objects.requireNonNull(reservation));
         return this.mapper.reservationToReservationDto(savedReservation);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ReservationDto> findAllReservations() {
 
         return this.reservationRepository.findAll().stream()
@@ -50,6 +54,7 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ICampDay> findAvailabilitiesBetween(
             OffsetDateTime from, OffsetDateTime to) {
 

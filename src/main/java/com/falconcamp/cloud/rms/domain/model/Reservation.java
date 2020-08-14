@@ -51,7 +51,6 @@ public class Reservation implements Comparable<Reservation> {
     @Column(length = 64, columnDefinition = "varchar(64)")
     private String fullName;
 
-    @Column(unique = true)
     private String email;
 
     @Column(unique = true, updatable = false)
