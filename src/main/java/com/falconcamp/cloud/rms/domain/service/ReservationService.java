@@ -13,7 +13,6 @@ import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.type.descriptor.java.ImmutableMutabilityPlan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +31,8 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @Service
 @AllArgsConstructor
 public class ReservationService implements IReservationService {
+
+    private static final int EARLIEST_ADVANCE_RESERVATION_DAYS = 30;
 
     private final IReservationMapper mapper;
     private final IReservationRepository reservationRepository;
@@ -75,8 +76,14 @@ public class ReservationService implements IReservationService {
 
         OffsetDateTime todayAsCampDay = ICampDay.normalize(OffsetDateTime.now());
         OffsetDateTime startDay = bookDays.get(0);
+
         if (!todayAsCampDay.isBefore(startDay)) {
             throw TooLateReservationException.of(startDay);
+        }
+
+        if (DAYS.between(todayAsCampDay, startDay) >
+                EARLIEST_ADVANCE_RESERVATION_DAYS) {
+            throw TooEarlyReservationException.of(startDay);
         }
 
         OffsetDateTime searchFrom = ICampDay.asSearchFromDay(bookDays.get(0));
