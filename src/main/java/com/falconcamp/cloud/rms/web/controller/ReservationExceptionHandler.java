@@ -113,17 +113,8 @@ public class ReservationExceptionHandler {
         return new ResponseEntity(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(TooLateReservationException.class)
-    public ResponseEntity<String> handleTooLateReservationException(
-            TooLateReservationException ex) {
-
-        return new ResponseEntity(ex.getMessage(), HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(TooEarlyReservationException.class)
-    public ResponseEntity<String> handleTooEarlyReservationException(
-            TooEarlyReservationException ex) {
-
+    @ExceptionHandler(TemporalException.class)
+    public ResponseEntity<String> handleTemporalException(TemporalException ex) {
         return new ResponseEntity(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 

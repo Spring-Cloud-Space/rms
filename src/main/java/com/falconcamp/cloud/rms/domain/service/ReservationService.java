@@ -6,6 +6,7 @@ package com.falconcamp.cloud.rms.domain.service;
 
 import com.falconcamp.cloud.rms.domain.model.Reservation;
 import com.falconcamp.cloud.rms.domain.repository.IReservationRepository;
+import com.falconcamp.cloud.rms.domain.service.ReservationTemporalValidator.Result;
 import com.falconcamp.cloud.rms.domain.service.dto.ICampDay;
 import com.falconcamp.cloud.rms.domain.service.dto.ReservationDto;
 import com.falconcamp.cloud.rms.domain.service.mappers.IReservationMapper;
@@ -32,9 +33,8 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @AllArgsConstructor
 public class ReservationService implements IReservationService {
 
-    private static final int EARLIEST_ADVANCE_RESERVATION_DAYS = 30;
-
     private final IReservationMapper mapper;
+    private final IReservationValidator temporalValidator;
     private final IReservationRepository reservationRepository;
 
     @Override
@@ -70,27 +70,22 @@ public class ReservationService implements IReservationService {
     @Transactional
     public ReservationDto save(ReservationDto reservationDto) {
 
+        Result result = this.temporalValidator.validate(reservationDto);
+
+        if (!result.isValid()) {
+            throw new TemporalException(result.getResultInfo());
+        }
+
+        // Check if available
         final ReservationDto dto = Objects.requireNonNull(reservationDto).normalize();
 
         List<OffsetDateTime> bookDays = dto.getCampDates();
 
-        OffsetDateTime todayAsCampDay = ICampDay.normalize(OffsetDateTime.now());
-        OffsetDateTime startDay = bookDays.get(0);
-
-        if (!todayAsCampDay.isBefore(startDay)) {
-            throw TooLateReservationException.of(startDay);
-        }
-
-        if (DAYS.between(todayAsCampDay, startDay) >
-                EARLIEST_ADVANCE_RESERVATION_DAYS) {
-            throw TooEarlyReservationException.of(startDay);
-        }
-
         OffsetDateTime searchFrom = ICampDay.asSearchFromDay(bookDays.get(0));
         OffsetDateTime searchTo = bookDays.get(bookDays.size() - 1).plusDays(1);
+
         List<OffsetDateTime> reservedDays = this.getAllReservedDays(
                 searchFrom, searchTo);
-
         List<OffsetDateTime> unavailableDays = bookDays.stream()
                 .filter(reservedDays::contains)
                 .collect(ImmutableList.toImmutableList());
@@ -99,11 +94,10 @@ public class ReservationService implements IReservationService {
             throw CampDayUnavailableException.of(unavailableDays);
         }
 
+        // Place new reservation
         Reservation reservation = this.mapper.reservationDtoToReservation(dto);
-
         Reservation savedReservation = this.reservationRepository.save(
                 Objects.requireNonNull(reservation));
-
         return this.mapper.reservationToReservationDto(savedReservation);
     }
 
