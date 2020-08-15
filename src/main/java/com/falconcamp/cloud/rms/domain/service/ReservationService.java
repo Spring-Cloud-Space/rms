@@ -69,9 +69,15 @@ public class ReservationService implements IReservationService {
     @Transactional
     public ReservationDto save(ReservationDto reservationDto) {
 
-        Objects.requireNonNull(reservationDto);
+        final ReservationDto dto = Objects.requireNonNull(reservationDto).normalize();
 
-        List<OffsetDateTime> bookDays = reservationDto.getCampDates();
+        List<OffsetDateTime> bookDays = dto.getCampDates();
+
+        OffsetDateTime todayAsCampDay = ICampDay.normalize(OffsetDateTime.now());
+        OffsetDateTime startDay = bookDays.get(0);
+        if (!todayAsCampDay.isBefore(startDay)) {
+            throw TooLateReservationException.of(startDay);
+        }
 
         OffsetDateTime searchFrom = ICampDay.asSearchFromDay(bookDays.get(0));
         OffsetDateTime searchTo = bookDays.get(bookDays.size() - 1).plusDays(1);
@@ -86,8 +92,7 @@ public class ReservationService implements IReservationService {
             throw CampDayUnavailableException.of(unavailableDays);
         }
 
-        Reservation reservation = this.mapper.reservationDtoToReservation(
-                reservationDto);
+        Reservation reservation = this.mapper.reservationDtoToReservation(dto);
 
         Reservation savedReservation = this.reservationRepository.save(
                 Objects.requireNonNull(reservation));

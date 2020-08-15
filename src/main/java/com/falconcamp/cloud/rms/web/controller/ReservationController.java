@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -76,8 +74,7 @@ public class ReservationController {
             @Valid @RequestBody ReservationDto reservationDto) {
 
         String newReservationId = this.reservationService.save(
-                reservationDto.normalize())
-                .getId().toString();
+                reservationDto).getId().toString();
 
         String responseMessage = String.format(
                 "Your new reservation ID is '%s'", newReservationId);

@@ -7,6 +7,7 @@ package com.falconcamp.cloud.rms.web.controller;
 import com.falconcamp.cloud.rms.domain.service.CampDayUnavailableException;
 import com.falconcamp.cloud.rms.domain.service.IllegalSearchArgumentsException;
 import com.falconcamp.cloud.rms.domain.service.ReservationNotFoundException;
+import com.falconcamp.cloud.rms.domain.service.TooLateReservationException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionFailedException;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -114,6 +114,13 @@ public class ReservationExceptionHandler {
             ReservationNotFoundException ex) {
 
         return new ResponseEntity(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(TooLateReservationException.class)
+    public ResponseEntity<String> handleTooLateReservationException(
+            TooLateReservationException ex) {
+
+        return new ResponseEntity(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(BindException.class)
