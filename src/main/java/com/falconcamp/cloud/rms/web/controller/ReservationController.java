@@ -12,16 +12,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/api/v1")
 @AllArgsConstructor
@@ -47,6 +51,7 @@ public class ReservationController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(name = "to", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+            // @RequestParam(name = "months") @Min(1) @Max(3) int months) {
 
         OffsetDateTime fromDateTime = ICampDay.asFromDay(from);
         OffsetDateTime toDateTime = ICampDay.calcEndDay(fromDateTime, to);
@@ -66,12 +71,12 @@ public class ReservationController {
     }
 
     @PostMapping(path = "/resv")
-    public ResponseEntity<String> saveNewReservation(
+    public ResponseEntity<String> placeNewReservation(
             @Valid @RequestBody ReservationDto reservationDto) {
 
-        String newReservationId = this.reservationService.save(reservationDto)
-                .getId()
-                .toString();
+        String newReservationId = this.reservationService.save(
+                reservationDto.normalize())
+                .getId().toString();
 
         String responseMessage = String.format(
                 "Your new reservation ID is '%s'", newReservationId);

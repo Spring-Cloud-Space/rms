@@ -15,6 +15,8 @@ import java.util.Objects;
 
 public interface ICampDay {
 
+    static final String ILLEGAL_SEARCH_BOUNDRY_ERROR_MESSAGE = "Illegal search boundry.";
+
     public static final ZoneOffset DEFAULT_ZONE_OFFSET =
             OffsetDateTime.now().getOffset();
 
@@ -34,7 +36,7 @@ public interface ICampDay {
         return CampDay.of(day, true);
     }
 
-    static OffsetDateTime asStartDay(@NonNull OffsetDateTime any) {
+    static OffsetDateTime normalize(@NonNull OffsetDateTime any) {
         return OffsetDateTime.of(
                 any.getYear(), any.getMonthValue(), any.getDayOfMonth(),
                 0, 0, 0, 0, DEFAULT_ZONE_OFFSET);
@@ -87,7 +89,7 @@ public interface ICampDay {
 
         if (endDay.isBefore(from)) {
             throw IllegalSearchArgumentsException.of(
-                    from, endDay, "Illegal search boundry.");
+                    from, endDay, ILLEGAL_SEARCH_BOUNDRY_ERROR_MESSAGE);
         }
 
         return endDay;

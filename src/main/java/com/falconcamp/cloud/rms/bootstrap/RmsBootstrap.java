@@ -48,7 +48,7 @@ public class RmsBootstrap implements CommandLineRunner {
                 .startDateTime(startDateTime)
                 .arrivalDateTime(startDateTime.minusDays(1))
                 .days(MAX_RESERV_DAYS - 1)
-                .detatureDateTime(startDateTime.plusDays(MAX_RESERV_DAYS - 1))
+                .depatureDateTime(startDateTime.plusDays(MAX_RESERV_DAYS - 1))
                 .build();
         this.reservationRepository.save(reserv0);
 
@@ -63,22 +63,36 @@ public class RmsBootstrap implements CommandLineRunner {
                 .startDateTime(startDateTime)
                 .arrivalDateTime(startDateTime.minusDays(1))
                 .days(MAX_RESERV_DAYS)
-                .detatureDateTime(startDateTime.plusDays(MAX_RESERV_DAYS))
+                .depatureDateTime(startDateTime.plusDays(MAX_RESERV_DAYS))
                 .build();
 
         this.reservationRepository.save(reserv1);
 
-        startDateTime = startDateTime.plusDays(10);
+        startDateTime = startDateTime.plusDays(6);
+
         Reservation reserv2 = Reservation.builder()
+                .email("john.snow@winterfell.com")
+                .fullName("Jon Snow")
+                .startDateTime(startDateTime)
+                .arrivalDateTime(startDateTime.minusDays(1))
+                .days(MAX_RESERV_DAYS - 1)
+                .depatureDateTime(startDateTime.plusDays(MAX_RESERV_DAYS - 1))
+                .build();
+
+        this.reservationRepository.save(reserv2);
+
+        startDateTime = startDateTime.plusDays(4);
+
+        Reservation reserv3 = Reservation.builder()
                 .email("stevej@apple.com")
                 .fullName("Steve Jobs")
                 .startDateTime(startDateTime)
                 .arrivalDateTime(startDateTime.minusDays(1))
                 .days(MAX_RESERV_DAYS - 1)
-                .detatureDateTime(startDateTime.plusDays(MAX_RESERV_DAYS - 1))
+                .depatureDateTime(startDateTime.plusDays(MAX_RESERV_DAYS - 1))
                 .build();
 
-        this.reservationRepository.save(reserv2);
+        this.reservationRepository.save(reserv3);
     }
 
 }///:~

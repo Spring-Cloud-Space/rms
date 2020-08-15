@@ -76,7 +76,7 @@ class IReservationMapperIT {
                 .email(this.email)
                 .startDateTime(this.startDateTime)
                 .arrivalDateTime(this.startDateTime.minusDays(1))
-                .detatureDateTime(this.startDateTime.plusDays(MAX_RESERV_DAYS))
+                .depatureDateTime(this.startDateTime.plusDays(MAX_RESERV_DAYS))
                 .days(MAX_RESERV_DAYS)
                 .build();
 
@@ -95,7 +95,7 @@ class IReservationMapperIT {
         assertThat(this.dto.getStartDateTime()).isEqualTo(this.startDateTime);
         assertThat(this.dto.getArrivalDateTime()).isEqualTo(
                 this.startDateTime.minusDays(1));
-        assertThat(this.dto.getDetatureDateTime()).isEqualTo(
+        assertThat(this.dto.getDepatureDateTime()).isEqualTo(
                 this.startDateTime.plusDays(MAX_RESERV_DAYS));
         assertThat(this.dto.getDays()).isEqualTo(MAX_RESERV_DAYS);
     }
@@ -113,7 +113,7 @@ class IReservationMapperIT {
                 .email(this.email)
                 .startDateTime(this.startDateTime)
                 .arrivalDateTime(this.startDateTime.minusDays(1))
-                .detatureDateTime(this.startDateTime.plusDays(MAX_RESERV_DAYS))
+                .depatureDateTime(this.startDateTime.plusDays(MAX_RESERV_DAYS))
                 .days(MAX_RESERV_DAYS)
                 .build();
 
@@ -130,7 +130,7 @@ class IReservationMapperIT {
         assertThat(this.reservation.getStartDateTime()).isEqualTo(this.startDateTime);
         assertThat(this.reservation.getArrivalDateTime()).isEqualTo(
                 this.startDateTime.minusDays(1));
-        assertThat(this.reservation.getDetatureDateTime()).isEqualTo(
+        assertThat(this.reservation.getDepatureDateTime()).isEqualTo(
                 this.startDateTime.plusDays(MAX_RESERV_DAYS));
         assertThat(this.reservation.getDays()).isEqualTo(MAX_RESERV_DAYS);
     }

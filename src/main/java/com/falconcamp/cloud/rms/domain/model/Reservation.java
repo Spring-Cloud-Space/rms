@@ -4,7 +4,6 @@
 package com.falconcamp.cloud.rms.domain.model;
 
 
-import com.falconcamp.cloud.rms.domain.service.dto.ICampDay;
 import lombok.*;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -18,8 +17,6 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.util.UUID;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 
 @Entity
@@ -58,7 +55,7 @@ public class Reservation implements Comparable<Reservation> {
 
     private OffsetDateTime arrivalDateTime;
 
-    private OffsetDateTime detatureDateTime;
+    private OffsetDateTime depatureDateTime;
 
     private int days;
 

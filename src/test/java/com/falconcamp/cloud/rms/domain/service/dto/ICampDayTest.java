@@ -56,7 +56,7 @@ class ICampDayTest {
         // Given
 
         // When
-        OffsetDateTime newStartDay = ICampDay.asStartDay(anyDateTime);
+        OffsetDateTime newStartDay = ICampDay.normalize(anyDateTime);
 
         // Then
         assertThat(newStartDay.getYear()).isEqualTo(this.year);
@@ -106,7 +106,7 @@ class ICampDayTest {
     void test_The_Default_Months_For_Search_Is_One_Month() {
 
         // Given
-        OffsetDateTime fromDay = ICampDay.asStartDay(this.anyDateTime);
+        OffsetDateTime fromDay = ICampDay.normalize(this.anyDateTime);
 
         // When
         OffsetDateTime searchEndDay = ICampDay.getSearchEndDay(fromDay, 0);
@@ -123,7 +123,7 @@ class ICampDayTest {
     void test_End_Search_Day_In_Months() {
 
         // Given
-        OffsetDateTime fromDay = ICampDay.asStartDay(this.anyDateTime);
+        OffsetDateTime fromDay = ICampDay.normalize(this.anyDateTime);
 
         // When
         OffsetDateTime searchEndDay = ICampDay.getSearchEndDay(fromDay, 2);
@@ -140,7 +140,7 @@ class ICampDayTest {
     void test_The_Search_From_Day_Is_Tomorrow_By_Default() {
 
         // Given
-        OffsetDateTime expectedFromDay = ICampDay.asStartDay(
+        OffsetDateTime expectedFromDay = ICampDay.normalize(
                 OffsetDateTime.now().plusDays(1));
 
         // When
@@ -171,7 +171,7 @@ class ICampDayTest {
     void test_Search_One_Month_If_End_Day_Param_Being_Absent() {
 
         // Given
-        OffsetDateTime from = ICampDay.asStartDay(this.anyDateTime);
+        OffsetDateTime from = ICampDay.normalize(this.anyDateTime);
         OffsetDateTime expectedEndDay = from.plusMonths(DEFAULT_SEARCH_MONTHS);
 
         // When
@@ -186,7 +186,7 @@ class ICampDayTest {
 
         // Given
         int days = 15;
-        OffsetDateTime from = ICampDay.asStartDay(this.anyDateTime);
+        OffsetDateTime from = ICampDay.normalize(this.anyDateTime);
         LocalDate endDayParam = LocalDate.of(this.year,
                 this.monthValue + 1, this.dayOfMonth + days);
         OffsetDateTime expectedEndDay = OffsetDateTime.of(this.year,
@@ -205,7 +205,7 @@ class ICampDayTest {
 
         // Given
         int days = 15;
-        OffsetDateTime from = ICampDay.asStartDay(this.anyDateTime);
+        OffsetDateTime from = ICampDay.normalize(this.anyDateTime);
         LocalDate endDayParam = LocalDate.of(this.year,
                 this.monthValue - 1, this.dayOfMonth);
 
@@ -213,7 +213,7 @@ class ICampDayTest {
         assertThatThrownBy(() -> {
             ICampDay.calcEndDay(from, endDayParam);
         }).isInstanceOf(IllegalSearchArgumentsException.class)
-                .hasMessageContaining("[SEARCH] - Illegal search boundry.");
+                .hasMessageContaining(ILLEGAL_SEARCH_BOUNDRY_ERROR_MESSAGE);
     }
 
 }///:~

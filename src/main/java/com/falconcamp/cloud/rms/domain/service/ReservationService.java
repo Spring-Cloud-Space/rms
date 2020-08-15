@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.type.descriptor.java.ImmutableMutabilityPlan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,21 +36,12 @@ public class ReservationService implements IReservationService {
     private final IReservationRepository reservationRepository;
 
     @Override
-    @Transactional
-    public ReservationDto save(ReservationDto reservationDto) {
-        Reservation reservation = this.mapper.reservationDtoToReservation(
-                reservationDto);
-        Reservation savedReservation = this.reservationRepository.save(
-                Objects.requireNonNull(reservation));
-        return this.mapper.reservationToReservationDto(savedReservation);
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<ReservationDto> findAllReservations() {
 
         return this.reservationRepository.findAll().stream()
                 .map(this.mapper::reservationToReservationDto)
+                .sorted()
                 .collect(ImmutableList.toImmutableList());
     }
 
@@ -70,6 +62,36 @@ public class ReservationService implements IReservationService {
                 .filter(day -> !reservedDays.contains(day))
                 .map(ICampDay::ofAvailable)
                 .collect(ImmutableList.toImmutableList());
+    }
+
+    @Override
+    @Transactional
+    public ReservationDto save(ReservationDto reservationDto) {
+
+        Objects.requireNonNull(reservationDto);
+
+        List<OffsetDateTime> bookDays = reservationDto.getCampDates();
+
+        OffsetDateTime searchFrom = ICampDay.asSearchFromDay(bookDays.get(0));
+        OffsetDateTime searchTo = bookDays.get(bookDays.size() - 1).plusDays(1);
+        List<OffsetDateTime> reservedDays = this.getAllReservedDays(
+                searchFrom, searchTo);
+
+        List<OffsetDateTime> unavailableDays = bookDays.stream()
+                .filter(reservedDays::contains)
+                .collect(ImmutableList.toImmutableList());
+
+        if (unavailableDays.size() > 0) {
+            throw CampDayUnavailableException.of(unavailableDays);
+        }
+
+        Reservation reservation = this.mapper.reservationDtoToReservation(
+                reservationDto);
+
+        Reservation savedReservation = this.reservationRepository.save(
+                Objects.requireNonNull(reservation));
+
+        return this.mapper.reservationToReservationDto(savedReservation);
     }
 
     private List<OffsetDateTime> getAllReservedDays(
