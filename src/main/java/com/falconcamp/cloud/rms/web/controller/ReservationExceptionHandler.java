@@ -6,6 +6,7 @@ package com.falconcamp.cloud.rms.web.controller;
 
 import com.falconcamp.cloud.rms.domain.service.CampDayUnavailableException;
 import com.falconcamp.cloud.rms.domain.service.IllegalSearchArgumentsException;
+import com.falconcamp.cloud.rms.domain.service.ReservationNotFoundException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionFailedException;
@@ -106,6 +107,13 @@ public class ReservationExceptionHandler {
             CampDayUnavailableException ex) {
 
         return new ResponseEntity(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(ReservationNotFoundException.class)
+    public ResponseEntity<String> handleReservationNotFoundException(
+            ReservationNotFoundException ex) {
+
+        return new ResponseEntity(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(BindException.class)

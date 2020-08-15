@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -92,6 +93,16 @@ public class ReservationService implements IReservationService {
                 Objects.requireNonNull(reservation));
 
         return this.mapper.reservationToReservationDto(savedReservation);
+    }
+
+    @Override
+    @Transactional
+    public UUID cancelById(UUID id) {
+        if (!this.reservationRepository.existsById(id)) {
+            throw ReservationNotFoundException.of(id);
+        }
+        this.reservationRepository.deleteById(Objects.requireNonNull(id));
+        return id;
     }
 
     private List<OffsetDateTime> getAllReservedDays(

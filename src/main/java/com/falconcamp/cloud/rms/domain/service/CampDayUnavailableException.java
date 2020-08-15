@@ -22,7 +22,7 @@ public class CampDayUnavailableException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return String.format("Unavailable Camp Days: %n",
+        return String.format("Unavailable Camp Days: %s%n",
                 this.unavailableCampDays.toString());
     }
 

@@ -22,6 +22,7 @@ import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 
 @Slf4j
@@ -82,6 +83,14 @@ public class ReservationController {
                 "Your new reservation ID is '%s'", newReservationId);
 
         return new ResponseEntity(responseMessage, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping(path = "/resv/{id}")
+    public ResponseEntity<String> cancelReservation(@PathVariable("id") UUID id) {
+
+        UUID cancelledId = this.reservationService.cancelById(id);
+        String msg = String.format("Reservation '%s' was cancelled.", id);
+        return new ResponseEntity(msg, HttpStatus.OK);
     }
 
 }///:~
