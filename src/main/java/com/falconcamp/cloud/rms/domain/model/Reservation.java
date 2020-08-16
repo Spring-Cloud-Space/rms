@@ -4,7 +4,6 @@
 package com.falconcamp.cloud.rms.domain.model;
 
 
-import com.falconcamp.cloud.rms.domain.service.dto.ICampDay;
 import lombok.*;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -17,7 +16,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.UUID;
 
 
@@ -28,7 +26,7 @@ import java.util.UUID;
 @Builder @AllArgsConstructor
 public class Reservation implements IHaveCampDays, Comparable<Reservation> {
 
-    static final long serialVersionUID = -5815566940065181210L;
+    static final long serialVersionUID = -4087195985098252755L;
 
     @Id
     @GeneratedValue(generator = "UUID")

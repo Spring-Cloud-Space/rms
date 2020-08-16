@@ -1,5 +1,10 @@
 server:
   port: 8081
+  # Adjustable for handling large volume of request
+  # For tomcat, the default number of threads is 200
+  tomcat:
+    threads:
+      max: 200
   error:
     include-stacktrace: never
 spring:
@@ -14,6 +19,22 @@ spring:
     username: sa
     password: password
     initialization-mode: EMBEDDED
+    hikari:
+      # Adjustable for handling large volume of request
+      # For H2, the Maximum number of connections is 100
+      maximum-pool-size: 16
+      minimum-idle: 1
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+        useLocalSessionState: true
+        rewriteBatchedStatements: true
+        cacheResultSetMetadata: true
+        cacheServerConfiguration: true
+        elideSetAutoCommits: true
+        maintainTimeStats: false
   h2:
     console:
       enabled: true

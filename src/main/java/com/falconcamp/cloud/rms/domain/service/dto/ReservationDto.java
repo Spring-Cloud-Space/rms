@@ -28,6 +28,8 @@ import static com.falconcamp.cloud.rms.domain.service.dto.CampDay.MIN_RESERV_DAY
 public class ReservationDto implements IHaveCampDays, Comparable<ReservationDto>,
         Serializable {
 
+    static final long serialVersionUID = 4509366172648555119L;
+
     @Null
     private UUID id;
 
