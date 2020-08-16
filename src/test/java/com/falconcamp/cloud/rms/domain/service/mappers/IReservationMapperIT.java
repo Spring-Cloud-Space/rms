@@ -67,7 +67,7 @@ class IReservationMapperIT {
     void test_Given_Reservation_When_Mapping_Then_Get_DTO_Back() {
 
         // Given
-        this.reservation = Reservation.builder()
+        reservation = Reservation.builder()
                 .id(this.id)
                 .version(this.version)
                 .createdDate(this.createDate)
@@ -81,7 +81,7 @@ class IReservationMapperIT {
                 .build();
 
         // When
-        this.dto = this.mapper.reservationToReservationDto(this.reservation);
+        this.dto = this.mapper.reservationToReservationDto(reservation);
 
         // Then
         assertThat(this.dto.getId()).isEqualTo(this.id);
@@ -118,21 +118,21 @@ class IReservationMapperIT {
                 .build();
 
         // When
-        this.reservation = this.mapper.reservationDtoToReservation(this.dto);
+        reservation = this.mapper.reservationDtoToReservation(this.dto);
 
         // Then
-        assertThat(this.reservation.getId()).isEqualTo(this.id);
-        assertThat(this.reservation.getVersion()).isEqualTo(this.version);
-        assertThat(this.reservation.getCreatedDate()).isEqualTo(this.createDate);
-        assertThat(this.reservation.getLastModifiedDate()).isEqualTo(this.lastModifiedDate);
-        assertThat(this.reservation.getFullName()).isEqualTo(this.fullName);
-        assertThat(this.reservation.getEmail()).isEqualTo(this.email);
-        assertThat(this.reservation.getStartDateTime()).isEqualTo(this.startDateTime);
-        assertThat(this.reservation.getArrivalDateTime()).isEqualTo(
+        assertThat(reservation.getId()).isEqualTo(this.id);
+        assertThat(reservation.getVersion()).isEqualTo(this.version);
+        assertThat(reservation.getCreatedDate()).isEqualTo(this.createDate);
+        assertThat(reservation.getLastModifiedDate()).isEqualTo(this.lastModifiedDate);
+        assertThat(reservation.getFullName()).isEqualTo(this.fullName);
+        assertThat(reservation.getEmail()).isEqualTo(this.email);
+        assertThat(reservation.getStartDateTime()).isEqualTo(this.startDateTime);
+        assertThat(reservation.getArrivalDateTime()).isEqualTo(
                 this.startDateTime.minusDays(1));
-        assertThat(this.reservation.getDepatureDateTime()).isEqualTo(
+        assertThat(reservation.getDepatureDateTime()).isEqualTo(
                 this.startDateTime.plusDays(MAX_RESERV_DAYS));
-        assertThat(this.reservation.getDays()).isEqualTo(MAX_RESERV_DAYS);
+        assertThat(reservation.getDays()).isEqualTo(MAX_RESERV_DAYS);
     }
 
 }///:~

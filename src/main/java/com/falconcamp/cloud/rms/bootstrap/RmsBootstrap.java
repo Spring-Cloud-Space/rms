@@ -28,11 +28,11 @@ public class RmsBootstrap implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (this.reservationRepository.count() == 0) {
+        if (reservationRepository.count() == 0) {
             this.loadExistingReservations();
         }
         log.debug(">>>>>>> {} reservations were loaded.",
-                this.reservationRepository.count());
+                reservationRepository.count());
     }
 
     private void loadExistingReservations() {
@@ -50,7 +50,7 @@ public class RmsBootstrap implements CommandLineRunner {
                 .days(MAX_RESERV_DAYS - 1)
                 .depatureDateTime(startDateTime.plusDays(MAX_RESERV_DAYS - 1))
                 .build();
-        this.reservationRepository.save(reserv0);
+        reservationRepository.save(reserv0);
 
         // September
         startDateTime = OffsetDateTime.of(
@@ -66,7 +66,7 @@ public class RmsBootstrap implements CommandLineRunner {
                 .depatureDateTime(startDateTime.plusDays(MAX_RESERV_DAYS))
                 .build();
 
-        this.reservationRepository.save(reserv1);
+        reservationRepository.save(reserv1);
 
         startDateTime = startDateTime.plusDays(6);
 
@@ -79,7 +79,7 @@ public class RmsBootstrap implements CommandLineRunner {
                 .depatureDateTime(startDateTime.plusDays(MAX_RESERV_DAYS - 1))
                 .build();
 
-        this.reservationRepository.save(reserv2);
+        reservationRepository.save(reserv2);
 
         startDateTime = startDateTime.plusDays(4);
 
@@ -92,7 +92,7 @@ public class RmsBootstrap implements CommandLineRunner {
                 .depatureDateTime(startDateTime.plusDays(MAX_RESERV_DAYS - 1))
                 .build();
 
-        this.reservationRepository.save(reserv3);
+        reservationRepository.save(reserv3);
     }
 
 }///:~

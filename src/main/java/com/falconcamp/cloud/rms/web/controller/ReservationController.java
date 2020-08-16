@@ -35,7 +35,7 @@ public class ReservationController {
     @GetMapping(path = "/resv", produces = {"application/json"})
     public ResponseEntity<List<ReservationDto>> listReservations() {
 
-        List<ReservationDto> resvList = this.reservationService.findAllReservations();
+        List<ReservationDto> resvList = reservationService.findAllReservations();
 
         if (resvList.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Reservation Found.");
@@ -55,7 +55,7 @@ public class ReservationController {
         OffsetDateTime fromDateTime = ICampDay.asFromDay(from);
         OffsetDateTime toDateTime = ICampDay.calcEndDay(fromDateTime, to);
 
-        List<ICampDay> availList = this.reservationService
+        List<ICampDay> availList = reservationService
                 .findAvailabilitiesBetween(fromDateTime, toDateTime);
 
         log.debug(">>>>>>> {} days are available.", availList.size());
@@ -73,7 +73,7 @@ public class ReservationController {
     public ResponseEntity<String> placeNewReservation(
             @Valid @RequestBody ReservationDto reservationDto) {
 
-        String newReservationId = this.reservationService.save(
+        String newReservationId = reservationService.save(
                 reservationDto).getId().toString();
 
         String responseMessage = String.format(
@@ -85,7 +85,7 @@ public class ReservationController {
     @DeleteMapping(path = "/resv/{id}")
     public ResponseEntity<String> cancelReservation(@PathVariable("id") UUID id) {
 
-        UUID cancelledId = this.reservationService.cancelById(id);
+        UUID cancelledId = reservationService.cancelById(id);
         String msg = String.format("Reservation '%s' was cancelled.", id);
         return new ResponseEntity(msg, HttpStatus.OK);
     }
@@ -96,7 +96,7 @@ public class ReservationController {
             @Valid @RequestBody ReservationDto reservationDto) {
 
         return new ResponseEntity(
-                this.reservationService.updateReservation(id, reservationDto),
+                reservationService.updateReservation(id, reservationDto),
                 HttpStatus.NO_CONTENT);
     }
 
