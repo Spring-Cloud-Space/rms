@@ -90,4 +90,14 @@ public class ReservationController {
         return new ResponseEntity(msg, HttpStatus.OK);
     }
 
+    @PutMapping("/resv/{id}")
+    public ResponseEntity updateReservationById(
+            @PathVariable("id") UUID id,
+            @Valid @RequestBody ReservationDto reservationDto) {
+
+        return new ResponseEntity(
+                this.reservationService.updateReservation(id, reservationDto),
+                HttpStatus.NO_CONTENT);
+    }
+
 }///:~

@@ -21,6 +21,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -79,7 +80,7 @@ public class ReservationService implements IReservationService {
         // Check if available
         final ReservationDto dto = Objects.requireNonNull(reservationDto).normalize();
 
-        List<OffsetDateTime> bookDays = dto.getCampDates();
+        List<OffsetDateTime> bookDays = ICampDay.getBookedDays(dto);
 
         OffsetDateTime searchFrom = ICampDay.asSearchFromDay(bookDays.get(0));
         OffsetDateTime searchTo = bookDays.get(bookDays.size() - 1).plusDays(1);
@@ -109,6 +110,62 @@ public class ReservationService implements IReservationService {
         }
         this.reservationRepository.deleteById(Objects.requireNonNull(id));
         return id;
+    }
+
+    @Override
+    @Transactional
+    public ReservationDto updateReservation(
+            UUID id, ReservationDto reservationDto) {
+
+        final Reservation reservation = this.findReservationById(id);
+        final ReservationDto dto = Objects.requireNonNull(reservationDto).normalize();
+
+        reservation.setFullName(dto.getFullName());
+        reservation.setEmail(dto.getEmail());
+        reservation.setArrivalDateTime(dto.getArrivalDateTime());
+        reservation.setDepatureDateTime(dto.getDepatureDateTime());
+
+        if (reservation.getStartDateTime().equals(dto.getStartDateTime()) &&
+                reservation.getDays() >= dto.getDays()) {
+            reservation.setDays(dto.getDays());
+            return this.mapper.reservationToReservationDto(reservation);
+        }
+
+        Result result = this.temporalValidator.validate(dto);
+        if (!result.isValid()) {
+            throw new TemporalException(result.getResultInfo());
+        }
+
+        // Check if available
+        List<OffsetDateTime> bookDays = ICampDay.getBookedDays(dto);
+        List<OffsetDateTime> bookedDays = ICampDay.getBookedDays(reservation);
+
+        OffsetDateTime searchFrom = ICampDay.asSearchFromDay(bookDays.get(0));
+        OffsetDateTime searchTo = bookDays.get(bookDays.size() - 1).plusDays(1);
+
+        List<OffsetDateTime> reservedDays =
+                this.getAllReservedDays(searchFrom, searchTo)
+                .stream()
+                .filter(day -> !bookedDays.contains(day))
+                .collect(ImmutableList.toImmutableList());
+
+        List<OffsetDateTime> unavailableDays = bookDays.stream()
+                .filter(reservedDays::contains)
+                .collect(ImmutableList.toImmutableList());
+
+        if (unavailableDays.size() > 0) {
+            throw CampDayUnavailableException.of(unavailableDays);
+        }
+
+        reservation.setDays(dto.getDays());
+        reservation.setStartDateTime(dto.getStartDateTime());
+
+        return this.mapper.reservationToReservationDto(reservation);
+    }
+
+    private Reservation findReservationById(@NonNull UUID id) {
+        return this.reservationRepository.findById(id)
+                .orElseThrow(() -> ReservationNotFoundException.of(id));
     }
 
     private List<OffsetDateTime> getAllReservedDays(

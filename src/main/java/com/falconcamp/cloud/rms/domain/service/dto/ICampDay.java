@@ -4,13 +4,17 @@
 package com.falconcamp.cloud.rms.domain.service.dto;
 
 
+import com.falconcamp.cloud.rms.domain.model.IHaveCampDays;
 import com.falconcamp.cloud.rms.domain.service.IllegalSearchArgumentsException;
+import com.google.common.collect.ImmutableList;
 import lombok.NonNull;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 
 public interface ICampDay {
@@ -93,6 +97,16 @@ public interface ICampDay {
         }
 
         return endDay;
+    }
+
+    static List<OffsetDateTime> getBookedDays(@NonNull IHaveCampDays resv) {
+
+        int days = resv.getDays();
+        OffsetDateTime startDay = resv.getStartDateTime();
+
+        return IntStream.range(0, days)
+                .mapToObj(i -> startDay.plusDays(i))
+                .collect(ImmutableList.toImmutableList());
     }
 
 }///:~

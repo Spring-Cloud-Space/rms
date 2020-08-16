@@ -4,7 +4,6 @@
 package com.falconcamp.cloud.rms.domain.service;
 
 
-import com.falconcamp.cloud.rms.domain.model.Reservation;
 import com.falconcamp.cloud.rms.domain.service.dto.ICampDay;
 import com.falconcamp.cloud.rms.domain.service.dto.ReservationDto;
 
@@ -18,6 +17,8 @@ public interface IReservationService {
     ReservationDto save(ReservationDto reservationDtto);
 
     UUID cancelById(UUID id);
+
+    ReservationDto updateReservation(UUID id, ReservationDto reservationDto);
 
     List<ReservationDto> findAllReservations();
 

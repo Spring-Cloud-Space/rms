@@ -36,7 +36,7 @@ final class ReservationTemporalValidator implements IReservationValidator {
         final ReservationDto dto = Objects.requireNonNull(reservationDto)
                 .normalize();
 
-        List<OffsetDateTime> bookDays = dto.getCampDates();
+        List<OffsetDateTime> bookDays = ICampDay.getBookedDays(dto);
 
         OffsetDateTime todayAsCampDay = ICampDay.normalize(OffsetDateTime.now());
         OffsetDateTime startDay = bookDays.get(0);

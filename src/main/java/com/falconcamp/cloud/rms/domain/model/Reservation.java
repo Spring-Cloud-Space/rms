@@ -4,6 +4,7 @@
 package com.falconcamp.cloud.rms.domain.model;
 
 
+import com.falconcamp.cloud.rms.domain.service.dto.ICampDay;
 import lombok.*;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -16,6 +17,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -24,7 +26,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Builder @AllArgsConstructor
-public class Reservation implements Comparable<Reservation> {
+public class Reservation implements IHaveCampDays, Comparable<Reservation> {
 
     static final long serialVersionUID = -5815566940065181210L;
 
@@ -50,7 +52,7 @@ public class Reservation implements Comparable<Reservation> {
 
     private String email;
 
-    @Column(unique = true, updatable = false)
+    @Column(unique = true)
     private OffsetDateTime startDateTime;
 
     private OffsetDateTime arrivalDateTime;
@@ -74,18 +76,23 @@ public class Reservation implements Comparable<Reservation> {
 
         return new EqualsBuilder()
                 .append(this.startDateTime, other.startDateTime)
+                .append(this.days, other.days)
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(this.startDateTime).toHashCode();
+        return new HashCodeBuilder()
+                .append(this.startDateTime)
+                .append(this.days)
+                .toHashCode();
     }
 
     @Override
     public int compareTo(final Reservation obj) {
         return new CompareToBuilder()
                 .append(this.startDateTime, obj.startDateTime)
+                .append(this.days, obj.days)
                 .toComparison();
     }
 

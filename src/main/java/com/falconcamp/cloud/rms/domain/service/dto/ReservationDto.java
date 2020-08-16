@@ -4,8 +4,8 @@
 package com.falconcamp.cloud.rms.domain.service.dto;
 
 
+import com.falconcamp.cloud.rms.domain.model.IHaveCampDays;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.google.common.collect.ImmutableList;
 import lombok.*;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -14,9 +14,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
 import static com.falconcamp.cloud.rms.domain.service.dto.CampDay.MAX_RESERV_DAYS;
 import static com.falconcamp.cloud.rms.domain.service.dto.CampDay.MIN_RESERV_DAYS;
@@ -27,7 +25,8 @@ import static com.falconcamp.cloud.rms.domain.service.dto.CampDay.MIN_RESERV_DAY
 @ToString
 @NoArgsConstructor
 @Builder @AllArgsConstructor
-public class ReservationDto implements Comparable<ReservationDto>, Serializable {
+public class ReservationDto implements IHaveCampDays, Comparable<ReservationDto>,
+        Serializable {
 
     @Null
     private UUID id;
@@ -68,12 +67,6 @@ public class ReservationDto implements Comparable<ReservationDto>, Serializable 
     @Min(MIN_RESERV_DAYS)
     @Max(MAX_RESERV_DAYS)
     private int days;
-
-    public List<OffsetDateTime> getCampDates() {
-        return IntStream.range(0, this.days)
-                .mapToObj(i -> this.startDateTime.plusDays(i))
-                .collect(ImmutableList.toImmutableList());
-    }
 
     public ReservationDto normalize() {
         return ReservationDto.builder()
