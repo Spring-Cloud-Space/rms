@@ -13,6 +13,7 @@ import com.falconcamp.cloud.rms.domain.service.mappers.IReservationMapper;
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -30,8 +33,10 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ReservationService implements IReservationService {
+
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final IReservationMapper mapper;
     private final IReservationValidator temporalValidator;
@@ -42,7 +47,16 @@ public class ReservationService implements IReservationService {
     @Transactional(readOnly = true)
     public List<ReservationDto> findAllReservations() {
 
-        return reservationRepository.findAll().stream()
+        List<Reservation> allReservations = List.of();
+
+        this.lock.readLock().lock();
+        try {
+            allReservations = this.reservationRepository.findAll();
+        } finally {
+            this.lock.readLock().unlock();
+        }
+
+        return allReservations.stream()
                 .map(this.mapper::reservationToReservationDto)
                 .sorted()
                 .collect(ImmutableList.toImmutableList());
@@ -54,11 +68,16 @@ public class ReservationService implements IReservationService {
             OffsetDateTime from, OffsetDateTime to) {
 
         OffsetDateTime searchFromDay = ICampDay.asSearchFromDay(from);
+        List<OffsetDateTime> reservedDays;
 
-        final List<OffsetDateTime> reservedDays =
-                this.reservedCampDaysService.getAllReservedCampDays(
-                        this.reservationRepository, searchFromDay, to);
-                // this.getAllReservedDays(searchFromDay, to);
+        this.lock.readLock().lock();
+
+        try {
+            reservedDays = this.reservedCampDaysService.getAllReservedCampDays(
+                    this.reservationRepository, searchFromDay, to);
+        } finally {
+            this.lock.readLock().unlock();
+        }
 
         long allDays = DAYS.between(from, to);
 
@@ -75,26 +94,37 @@ public class ReservationService implements IReservationService {
 
         this.validateCampDayUpdate(reservationDto);
 
-        final ReservationDto newDto = Objects.requireNonNull(reservationDto).normalize();
+        final ReservationDto newDto = Objects.requireNonNull(reservationDto)
+                .normalize();
 
-        this.checkNewCampDaysAvailability(newDto);
+        this.lock.writeLock().lock();
 
-        // Place new reservation
-        Reservation reservation = this.mapper.reservationDtoToReservation(newDto);
-        Reservation savedReservation = reservationRepository.save(
-                Objects.requireNonNull(reservation));
-
-        return this.mapper.reservationToReservationDto(savedReservation);
+        try {
+            this.checkNewCampDaysAvailability(newDto);
+            Reservation reservation = this.mapper.reservationDtoToReservation(newDto);
+            Reservation savedReservation = reservationRepository.saveAndFlush(
+                    Objects.requireNonNull(reservation));
+            return this.mapper.reservationToReservationDto(savedReservation);
+        } finally {
+            this.lock.writeLock().unlock();
+        }
     }
 
     @Override
     @Transactional
     public UUID cancelById(UUID id) {
-        if (!reservationRepository.existsById(id)) {
-            throw ReservationNotFoundException.of(id);
+
+        this.lock.writeLock().lock();
+
+        try {
+            if (!reservationRepository.existsById(id)) {
+                throw ReservationNotFoundException.of(id);
+            }
+            reservationRepository.deleteById(Objects.requireNonNull(id));
+            return id;
+        } finally {
+            this.lock.writeLock().unlock();
         }
-        reservationRepository.deleteById(Objects.requireNonNull(id));
-        return id;
     }
 
     @Override
@@ -102,8 +132,17 @@ public class ReservationService implements IReservationService {
     public ReservationDto updateReservation(
             @NonNull UUID id, @NonNull ReservationDto reservationDto) {
 
-        final Reservation reservation = this.findReservationById(id);
-        final ReservationDto updateDto = reservationDto.normalize();
+        Reservation reservation = null;
+
+        this.lock.readLock().lock();
+
+        try {
+            reservation = this.findReservationById(id);
+        } finally {
+            this.lock.readLock().unlock();
+        }
+
+        ReservationDto updateDto = reservationDto.normalize();
 
         this.updateCustomerData(reservation, updateDto);
 
@@ -114,10 +153,15 @@ public class ReservationService implements IReservationService {
 
         this.validateCampDayUpdate(updateDto);
 
-        this.checkUpdateCampDaysAvailability(reservation, updateDto);
-        this.updateCampDays(reservation, updateDto);
+        this.lock.writeLock().lock();
 
-        return this.mapper.reservationToReservationDto(reservation);
+        try {
+            this.checkUpdateCampDaysAvailability(reservation, updateDto);
+            this.updateCampDays(reservation, updateDto);
+            return this.mapper.reservationToReservationDto(reservation);
+        } finally {
+            this.lock.writeLock().unlock();
+        }
     }
 
     private void updateCustomerData(@NonNull Reservation reservation,
@@ -201,22 +245,5 @@ public class ReservationService implements IReservationService {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> ReservationNotFoundException.of(id));
     }
-
-//    private List<OffsetDateTime> getAllReservedDays(
-//            OffsetDateTime from, OffsetDateTime to) {
-//
-//        return reservationRepository
-//                .findAllByStartDateTimeBetween(from, to).stream()
-//                .flatMap(this::getReservedDays)
-//                .collect(ImmutableList.toImmutableList());
-//    }
-//
-//    private Stream<OffsetDateTime> getReservedDays(
-//            @NonNull Reservation reservation) {
-//
-//        OffsetDateTime startDateTime = reservation.getStartDateTime();
-//        return IntStream.range(0, reservation.getDays())
-//                .mapToObj(i -> startDateTime.plusDays(i));
-//    }
 
 }///:~

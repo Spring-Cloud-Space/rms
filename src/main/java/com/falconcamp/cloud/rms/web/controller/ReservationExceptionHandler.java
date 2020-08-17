@@ -7,7 +7,9 @@ package com.falconcamp.cloud.rms.web.controller;
 import com.falconcamp.cloud.rms.domain.service.*;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.StaleObjectStateException;
 import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -106,6 +108,24 @@ public class ReservationExceptionHandler {
         return new ResponseEntity(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<String> handleConflict(DataIntegrityViolationException ex) {
+
+        String message = String.format("The camp site is not available for " +
+                "your new reservaton ");
+
+        return new ResponseEntity(message, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(StaleObjectStateException.class)
+    public ResponseEntity<String> handleConflict(StaleObjectStateException ex) {
+
+        String message = String.format("The camp site is not available for " +
+                "your new reservaton ");
+
+        return new ResponseEntity(message, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(ReservationNotFoundException.class)
     public ResponseEntity<String> handleReservationNotFoundException(
             ReservationNotFoundException ex) {
@@ -123,4 +143,5 @@ public class ReservationExceptionHandler {
         return new ResponseEntity(ex.getAllErrors(), HttpStatus.BAD_REQUEST);
     }
 
+    //StaleObjectStateException:
 }///:~

@@ -53,3 +53,6 @@ logging:
 #              BasicBinder: TRACE
 #    com.zaxxer.hikari:
 #      HikariConfig: DEBUG
+falconcamp:
+  cloud:
+    rms-service-host: http://localhost
