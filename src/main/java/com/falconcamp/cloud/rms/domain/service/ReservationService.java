@@ -15,9 +15,11 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.LockModeType;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -129,6 +131,7 @@ public class ReservationService implements IReservationService {
 
     @Override
     @Transactional
+    @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
     public ReservationDto updateReservation(
             @NonNull UUID id, @NonNull ReservationDto reservationDto) {
 
