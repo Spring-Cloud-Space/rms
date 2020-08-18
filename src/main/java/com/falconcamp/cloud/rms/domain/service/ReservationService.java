@@ -11,7 +11,6 @@ import com.falconcamp.cloud.rms.domain.service.dto.ICampDay;
 import com.falconcamp.cloud.rms.domain.service.dto.ReservationDto;
 import com.falconcamp.cloud.rms.domain.service.mappers.IReservationMapper;
 import com.google.common.collect.ImmutableList;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +25,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.IntStream;
 import java.util.stream.LongStream;
-import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -38,7 +35,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @RequiredArgsConstructor
 public class ReservationService implements IReservationService {
 
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
+    final private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final IReservationMapper mapper;
     private final IReservationValidator temporalValidator;
@@ -84,7 +81,7 @@ public class ReservationService implements IReservationService {
         long allDays = DAYS.between(from, to);
 
         return LongStream.range(0, allDays)
-                .mapToObj(i -> from.plusDays(i))
+                .mapToObj(from::plusDays)
                 .filter(day -> !reservedDays.contains(day))
                 .map(ICampDay::ofAvailable)
                 .collect(ImmutableList.toImmutableList());

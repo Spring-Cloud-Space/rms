@@ -170,7 +170,7 @@ class ReservationIT {
                 .count();
 
         // Then
-        assertThat(successfulReservationCount).isGreaterThanOrEqualTo(1);
+        assertThat(successfulReservationCount).isOne();
     }
 
     private CompletableFuture<ResponseEntity<String>> placeNewReservation(
