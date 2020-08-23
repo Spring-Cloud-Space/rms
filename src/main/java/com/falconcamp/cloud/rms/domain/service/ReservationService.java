@@ -23,11 +23,11 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.LongStream;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
+import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 
 
 @Slf4j
@@ -35,48 +35,31 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @RequiredArgsConstructor
 public class ReservationService implements IReservationService {
 
-    final private ReadWriteLock lock = new ReentrantReadWriteLock();
-
     private final IReservationMapper mapper;
     private final IReservationValidator temporalValidator;
     private final IReservationRepository reservationRepository;
     private final IReservedCampDaysService reservedCampDaysService;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, isolation = READ_COMMITTED)
     public List<ReservationDto> findAllReservations() {
-
-        List<Reservation> allReservations = List.of();
-
-        this.lock.readLock().lock();
-        try {
-            allReservations = this.reservationRepository.findAll();
-        } finally {
-            this.lock.readLock().unlock();
-        }
-
-        return allReservations.stream()
+        return this.reservationRepository.findAll().stream()
                 .map(this.mapper::reservationToReservationDto)
                 .sorted()
                 .collect(ImmutableList.toImmutableList());
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, isolation = READ_COMMITTED)
+    @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
     public List<ICampDay> findAvailabilitiesBetween(
             OffsetDateTime from, OffsetDateTime to) {
 
         OffsetDateTime searchFromDay = ICampDay.asSearchFromDay(from);
-        List<OffsetDateTime> reservedDays;
 
-        this.lock.readLock().lock();
-
-        try {
-            reservedDays = this.reservedCampDaysService.getAllReservedCampDays(
-                    this.reservationRepository, searchFromDay, to);
-        } finally {
-            this.lock.readLock().unlock();
-        }
+        List<OffsetDateTime> reservedDays=
+                this.reservedCampDaysService.getAllReservedCampDays(
+                        this.reservationRepository, searchFromDay, to);
 
         long allDays = DAYS.between(from, to);
 
@@ -88,7 +71,8 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = SERIALIZABLE)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public ReservationDto save(ReservationDto reservationDto) {
 
         this.validateCampDayUpdate(reservationDto);
@@ -96,51 +80,32 @@ public class ReservationService implements IReservationService {
         final ReservationDto newDto = Objects.requireNonNull(reservationDto)
                 .normalize();
 
-        this.lock.writeLock().lock();
+        this.checkNewCampDaysAvailability(newDto);
+        Reservation reservation = this.mapper.reservationDtoToReservation(newDto);
+        Reservation savedReservation = reservationRepository.saveAndFlush(
+                Objects.requireNonNull(reservation));
 
-        try {
-            this.checkNewCampDaysAvailability(newDto);
-            Reservation reservation = this.mapper.reservationDtoToReservation(newDto);
-            Reservation savedReservation = reservationRepository.saveAndFlush(
-                    Objects.requireNonNull(reservation));
-            return this.mapper.reservationToReservationDto(savedReservation);
-        } finally {
-            this.lock.writeLock().unlock();
-        }
+        return this.mapper.reservationToReservationDto(savedReservation);
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = SERIALIZABLE)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public UUID cancelById(UUID id) {
-
-        this.lock.writeLock().lock();
-
-        try {
-            if (!reservationRepository.existsById(id)) {
-                throw ReservationNotFoundException.of(id);
-            }
-            reservationRepository.deleteById(Objects.requireNonNull(id));
-            return id;
-        } finally {
-            this.lock.writeLock().unlock();
+        if (!reservationRepository.existsById(id)) {
+            throw ReservationNotFoundException.of(id);
         }
+        reservationRepository.deleteById(Objects.requireNonNull(id));
+        return id;
     }
 
     @Override
-    @Transactional
-    @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
+    @Transactional(isolation = SERIALIZABLE)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public ReservationDto updateReservation(
             @NonNull UUID id, @NonNull ReservationDto reservationDto) {
 
-        Reservation reservation = null;
-
-        this.lock.readLock().lock();
-
-        try {
-            reservation = this.findReservationById(id);
-        } finally {
-            this.lock.readLock().unlock();
-        }
+        Reservation reservation = this.findReservationById(id);
 
         ReservationDto updateDto = reservationDto.normalize();
 
@@ -153,15 +118,10 @@ public class ReservationService implements IReservationService {
 
         this.validateCampDayUpdate(updateDto);
 
-        this.lock.writeLock().lock();
+        this.checkUpdateCampDaysAvailability(reservation, updateDto);
+        this.updateCampDays(reservation, updateDto);
 
-        try {
-            this.checkUpdateCampDaysAvailability(reservation, updateDto);
-            this.updateCampDays(reservation, updateDto);
-            return this.mapper.reservationToReservationDto(reservation);
-        } finally {
-            this.lock.writeLock().unlock();
-        }
+        return this.mapper.reservationToReservationDto(reservation);
     }
 
     private void updateCustomerData(@NonNull Reservation reservation,
