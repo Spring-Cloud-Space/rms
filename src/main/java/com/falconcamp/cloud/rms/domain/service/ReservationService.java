@@ -72,7 +72,6 @@ public class ReservationService implements IReservationService {
 
     @Override
     @Transactional(isolation = SERIALIZABLE)
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public ReservationDto save(ReservationDto reservationDto) {
 
         this.validateCampDayUpdate(reservationDto);
@@ -101,7 +100,6 @@ public class ReservationService implements IReservationService {
 
     @Override
     @Transactional(isolation = SERIALIZABLE)
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public ReservationDto updateReservation(
             @NonNull UUID id, @NonNull ReservationDto reservationDto) {
 

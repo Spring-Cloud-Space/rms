@@ -90,7 +90,7 @@ class ReservationIT {
     }
 
     @Order(1)
-    @RepeatedTest(value = 3, name = RepeatedTest.LONG_DISPLAY_NAME)
+    @RepeatedTest(value = 9, name = RepeatedTest.LONG_DISPLAY_NAME)
     void test_Able_To_Handle_Concurrent_Requests_To_Reserve_The_Campsite(
             RepetitionInfo repetitionInfo) {
 
@@ -131,8 +131,8 @@ class ReservationIT {
                 expectedSuccessfulReservationCount);
     }
 
-    @Test
-    @Order(1)
+    @Order(2)
+    @RepeatedTest(value = 9, name = RepeatedTest.LONG_DISPLAY_NAME)
     void test_Able_To_Update_An_Excisting_Reservation() {
 
         // Given

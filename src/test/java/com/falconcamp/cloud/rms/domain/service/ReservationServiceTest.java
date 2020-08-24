@@ -165,18 +165,10 @@ class ReservationServiceTest {
             this.prepareForUpdateValidationAndavailabilityCheck();
 
             List<OffsetDateTime> reservedDays = List.of(
-                    OffsetDateTime.of(2020, 8, 28,
-                            0, 0, 0, 0,
-                            DEFAULT_ZONE_OFFSET),
-                    OffsetDateTime.of(2020, 8, 29,
-                            0, 0, 0, 0,
-                            DEFAULT_ZONE_OFFSET),
-                    OffsetDateTime.of(2020, 8, 30,
-                            0, 0, 0, 0,
-                            DEFAULT_ZONE_OFFSET),
-                    OffsetDateTime.of(2020, 8, 31,
-                            0, 0, 0, 0,
-                            DEFAULT_ZONE_OFFSET)
+                    ICampDay.normalize(OffsetDateTime.now().plusDays(12)),
+                    ICampDay.normalize(OffsetDateTime.now().plusDays(13)),
+                    ICampDay.normalize(OffsetDateTime.now().plusDays(14)),
+                    ICampDay.normalize(OffsetDateTime.now().plusDays(15))
             );
 
             given(reservedCampDaysService.getAllReservedCampDays(
