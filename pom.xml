@@ -161,11 +161,32 @@
             <artifactId>jaxb-impl</artifactId>
         </dependency>
 
+        <!--
+          Actuator brings production-ready features to our application
+            - Monitoring our app
+            - Gathering metrics
+            - Understanding traffic
+            - The state of our database
+            - Get production-grade tools without having to actually implement
+              these features ourselves
+            - Actuator is mainly used to expose operational information about
+              the running application
+                - health
+                - metrics
+                - info
+                - dump
+                - env
+            - http://localhost:8081/actuator/health
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!--
+          Improve the development time while working with the Spring Boot application.
+          Spring Boot DevTools pick up the changes and restart the application
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -228,16 +249,6 @@
     </dependencies>
 
     <build>
-
-        <extensions>
-
-            <extension>
-                <groupId>io.packagecloud.maven.wagon</groupId>
-                <artifactId>maven-packagecloud-wagon</artifactId>
-                <version>0.0.6</version>
-            </extension>
-
-        </extensions>
 
         <pluginManagement>
 

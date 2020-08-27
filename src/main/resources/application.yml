@@ -38,7 +38,10 @@ spring:
   h2:
     console:
       enabled: true
-springdoc:
+management:
+  endpoint:
+    health:
+      show-details: always
   api-docs:
     path: /v1/api-docs
 #logging:
