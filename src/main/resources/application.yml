@@ -42,6 +42,7 @@ management:
   endpoint:
     health:
       show-details: always
+springdoc:
   api-docs:
     path: /v1/api-docs
 #logging:
