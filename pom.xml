@@ -35,6 +35,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <mapstruct.version>1.3.1.Final</mapstruct.version>
+        <springdoc.version>1.4.4</springdoc.version>
     </properties>
 
     <dependencyManagement>
@@ -171,6 +172,23 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+
+        <!-- springdoc -->
+        <!-- http://localhost:8081/v1/api-docs/ -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-data-rest</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+
+        <!-- http://localhost:8081/swagger-ui.html -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+
+        <!-- End of springdoc -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

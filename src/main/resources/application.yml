@@ -38,6 +38,9 @@ spring:
   h2:
     console:
       enabled: true
+springdoc:
+  api-docs:
+    path: /v1/api-docs
 #logging:
 logging:
   level:
