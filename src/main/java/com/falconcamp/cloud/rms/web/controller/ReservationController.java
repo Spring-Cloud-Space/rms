@@ -30,6 +30,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ReservationController {
 
+    static final String SUCCESSFULLY_PLACED_NEW_RESERVATION_MSG_TEMPLATE =
+            "Your new reservation ID is '%s'";
+
     private final IReservationService reservationService;
 
     @GetMapping(path = "/resv", produces = {"application/json"})
@@ -73,11 +76,14 @@ public class ReservationController {
     public ResponseEntity<String> placeNewReservation(
             @Valid @RequestBody ReservationDto reservationDto) {
 
-        String newReservationId = reservationService.save(
-                reservationDto).getId().toString();
+        ReservationDto newReservationDto =
+                this.reservationService.save(reservationDto);
+
+        String newReservationId = newReservationDto.getId().toString();
 
         String responseMessage = String.format(
-                "Your new reservation ID is '%s'", newReservationId);
+                SUCCESSFULLY_PLACED_NEW_RESERVATION_MSG_TEMPLATE,
+                newReservationId);
 
         return new ResponseEntity(responseMessage, HttpStatus.CREATED);
     }

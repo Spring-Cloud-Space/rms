@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @Slf4j
+@Disabled
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("The Integration Test of Reservation Endpoints - ")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -64,7 +65,7 @@ class ReservationIT {
                 rmsProperties.getRmsServiceHost(), this.port, RESERVATION_PATH);
 
         this.startDay = OffsetDateTime.of(
-                2020, 9, 2,
+                2020, 9, 10,
                 0, 0, 0, 0,
                 DEFAULT_ZONE_OFFSET);
 
@@ -90,7 +91,7 @@ class ReservationIT {
     }
 
     @Order(1)
-    @RepeatedTest(value = 9, name = RepeatedTest.LONG_DISPLAY_NAME)
+    @RepeatedTest(value = 7, name = RepeatedTest.LONG_DISPLAY_NAME)
     void test_Able_To_Handle_Concurrent_Requests_To_Reserve_The_Campsite(
             RepetitionInfo repetitionInfo) {
 
