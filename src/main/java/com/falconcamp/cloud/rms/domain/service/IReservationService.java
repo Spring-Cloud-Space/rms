@@ -9,10 +9,13 @@ import com.falconcamp.cloud.rms.domain.service.dto.ReservationDto;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
 public interface IReservationService {
+
+    ReservationDto getReservation(UUID uuid);
 
     ReservationDto save(ReservationDto reservationDtto);
 

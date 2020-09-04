@@ -35,6 +35,15 @@ public class ReservationController {
 
     private final IReservationService reservationService;
 
+    @GetMapping(path = "/resv/{id}", produces = {"application/json"})
+    public ResponseEntity<ReservationDto> getReservation(
+            @PathVariable("id") UUID id) {
+
+        ReservationDto reservationDto = this.reservationService.getReservation(id);
+
+        return new ResponseEntity<>(reservationDto, HttpStatus.OK);
+    }
+
     @GetMapping(path = "/resv", produces = {"application/json"})
     public ResponseEntity<List<ReservationDto>> listReservations() {
 

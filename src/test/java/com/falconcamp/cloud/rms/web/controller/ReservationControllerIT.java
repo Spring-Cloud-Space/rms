@@ -5,6 +5,7 @@ package com.falconcamp.cloud.rms.web.controller;
 
 
 import com.falconcamp.cloud.rms.domain.service.IReservationService;
+import com.falconcamp.cloud.rms.domain.service.ReservationNotFoundException;
 import com.falconcamp.cloud.rms.domain.service.dto.ReservationDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +30,14 @@ import java.util.function.Supplier;
 
 import static com.falconcamp.cloud.rms.domain.service.dto.ICampDay.DEFAULT_ZONE_OFFSET;
 import static com.falconcamp.cloud.rms.domain.service.dto.ICampDay.MAX_RESERV_DAYS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -113,6 +119,89 @@ class ReservationControllerIT {
     }
 
     @Test
+    void test_Given_ID_When_Geting_Reservation_Then_Having_DTO_Back()
+            throws Exception {
+
+        // Given
+        String dtoJson = this.objectMapper.writeValueAsString(this.dto_1);
+
+        // When
+        given(this.reservationService.getReservation(this.id_1))
+                .willReturn(this.dto_1);
+
+        // Then
+        this.mockMvc.perform(get(specificReservationUriSupplier.get(), this.id_1)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(dtoJson))
+                .andDo(document("v1/resv-get",
+                        pathParameters(parameterWithName("id").description("UUID of a Reservation to get.")),
+                        responseFields(
+                                fieldWithPath("id")
+                                        .description("Id of Reservation")
+                                        .type(UUID.class),
+                                fieldWithPath("version")
+                                        .description("Version number")
+                                        .type(Integer.class),
+                                fieldWithPath("createdDate")
+                                        .description("Creating time")
+                                        .type(OffsetDateTime.class),
+                                fieldWithPath("lastModifiedDate")
+                                        .description("Recent modified time")
+                                        .type(OffsetDateTime.class),
+                                fieldWithPath("fullName")
+                                        .description("Customer's full name")
+                                        .type(String.class),
+                                fieldWithPath("email")
+                                        .description("Customer's email")
+                                        .type(String.class),
+                                fieldWithPath("email")
+                                        .description("Customer's email")
+                                        .type(String.class),
+                                fieldWithPath("startDateTime")
+                                        .description("Start time")
+                                        .type(OffsetDateTime.class),
+                                fieldWithPath("arrivalDateTime")
+                                        .description("Arrive time")
+                                        .type(OffsetDateTime.class),
+                                fieldWithPath("depatureDateTime")
+                                        .description("Depature time")
+                                        .type(OffsetDateTime.class),
+                                fieldWithPath("days")
+                                        .description("The number of reserved days")
+                                        .type(Integer.class))));
+
+    } // End of test_Given_ID_When_Geting_Reservation_Then_Having_DTO_Back
+
+    @Test
+    void test_Given_Nonexisting_ID_When_Geting_Reservation_Then_Handling_NotFoundException()
+            throws Exception {
+
+        // Given
+        UUID id = UUID.randomUUID();
+        willThrow(ReservationNotFoundException.of(id))
+                .given(this.reservationService)
+                .getReservation(id);
+
+        String expectedErrorMsg = String.format(
+                ReservationNotFoundException.ERROR_MSG_TEMPLATE, id.toString());
+
+        // When
+        given(this.reservationService.getReservation(this.id_1))
+                .willReturn(this.dto_1);
+
+        // Then
+        this.mockMvc.perform(get(specificReservationUriSupplier.get(), id)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertThat(
+                        result.getResolvedException()).isInstanceOf(
+                                ReservationNotFoundException.class))
+                .andExpect(result -> assertThat(result.getResolvedException()
+                        .getMessage()).isEqualTo(expectedErrorMsg));
+    }
+
+    @Test
     void test_Given_Resv_Uri_When_Send_Get_Request_Then_Get_All_Reservations() throws Exception {
 
         // Given
@@ -144,8 +233,7 @@ class ReservationControllerIT {
         // When & Then
         this.mockMvc.perform(get(RESERVATION_REQUEST_URI))
                 .andExpect(status().isOk())
-                .andExpect(content().json(dtosJson))
-                .andReturn();
+                .andExpect(content().json(dtosJson));
     }
 
     @Test
@@ -181,8 +269,7 @@ class ReservationControllerIT {
                         .characterEncoding("UTF-8")
                         .content(reservationDtoJson))
                 .andExpect(status().isCreated())
-                .andExpect(content().string(expectedResponseMsg))
-                .andReturn();
+                .andExpect(content().string(expectedResponseMsg));
     }
 
 }///:~

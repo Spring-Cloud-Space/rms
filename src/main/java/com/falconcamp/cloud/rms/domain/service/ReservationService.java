@@ -22,6 +22,7 @@ import javax.persistence.LockModeType;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.LongStream;
 
@@ -39,6 +40,16 @@ public class ReservationService implements IReservationService {
     private final IReservationValidator temporalValidator;
     private final IReservationRepository reservationRepository;
     private final IReservedCampDaysService reservedCampDaysService;
+
+    @Override
+    @Transactional(readOnly = true, isolation = READ_COMMITTED)
+    public ReservationDto getReservation(UUID id) {
+
+        Reservation reservation = this.reservationRepository.findById(id)
+                .orElseThrow(() -> ReservationNotFoundException.of(id));
+
+        return this.mapper.reservationToReservationDto(reservation);
+    }
 
     @Override
     @Transactional(readOnly = true, isolation = READ_COMMITTED)
