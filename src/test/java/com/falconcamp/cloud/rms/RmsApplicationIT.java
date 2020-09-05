@@ -21,6 +21,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
+@Disabled
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("Programmatic-Transaction-Management Test - ")

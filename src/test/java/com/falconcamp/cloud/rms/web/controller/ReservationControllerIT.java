@@ -46,8 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @Slf4j
-@AutoConfigureRestDocs(outputDir = "target/restdocs/snippets",
-        uriScheme = "${falconcamp.cloud.restdocs.url.scheme}",
+@AutoConfigureRestDocs(uriScheme = "${falconcamp.cloud.restdocs.url.scheme}",
         uriHost = "${falconcamp.cloud.restdocs.url.host}",
         uriPort = 8081)
 @ExtendWith(RestDocumentationExtension.class)
@@ -244,7 +243,7 @@ class ReservationControllerIT {
                         .content(reservationDtoJson))
                 .andExpect(status().isCreated())
                 .andExpect(content().string(expectedResponseMsg))
-                .andDo(document("v1/resv-new",  requestFields(
+                .andDo(document("v1/resv-post",  requestFields(
                         getRequestFieldDescriptors())));
     }
 

@@ -463,6 +463,18 @@
                 <artifactId>maven-enforcer-plugin</artifactId>
             </plugin>
 
+            <!-- REST Docs Configuration -->
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
+            </plugin>
+            <!-- End of REST Docs Configuration -->
+
         </plugins>
 
     </build>
