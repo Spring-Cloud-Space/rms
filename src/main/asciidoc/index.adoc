@@ -1,18 +1,26 @@
 = Camp Reservation Service Docs
+:stylesdir: style/
+:stylesheet: material-gray.css
 Yu LI <yu.li@tecsys.com>
-v1.0, 2020-09-05
+v1.0.0, 2020-09-05
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
+:highlightjs-theme: github
+:toc: left
+:toclevels: 3
+:sectlinks:
+:sectnums:
 
+[introduction]
+=== Introduction
 Sample application demonstrating how to use Spring REST Docs with JUnit 5.
-
 `ReservationControllerIT` makes a call to a very simple service and produces
 two documentation snippets.
 
 === Get Reservation by ID
 
-==== Make a Request using cURL
+==== cURL Request:
 
 include::{snippets}/v1/resv-get/curl-request.adoc[]
 
@@ -42,15 +50,15 @@ include::{snippets}/v1/resv-get/response-fields.adoc[]
 
 === Place a New Reservation
 
-==== One showing how to make a request using cURL:
+==== cURL Request:
 
 include::{snippets}/v1/resv-post/curl-request.adoc[]
 
-==== One showing the HTTP request:
+==== HTTP request:
 
 include::{snippets}/v1/resv-post/http-request.adoc[]
 
-==== Add one showing the HTTP Request Body:
+==== HTTP Request Body:
 
 include::{snippets}/v1/resv-post/request-body.adoc[]
 
@@ -58,7 +66,7 @@ include::{snippets}/v1/resv-post/request-body.adoc[]
 
 include::{snippets}/v1/resv-post/request-fields.adoc[]
 
-==== And one showing the HTTP response:
+==== HTTP response:
 
 include::{snippets}/v1/resv-post/http-response.adoc[]
 
