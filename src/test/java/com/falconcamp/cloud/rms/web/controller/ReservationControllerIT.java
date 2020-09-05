@@ -19,7 +19,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.constraints.ConstraintDescriptions;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -30,16 +33,17 @@ import java.util.function.Supplier;
 
 import static com.falconcamp.cloud.rms.domain.service.dto.ICampDay.DEFAULT_ZONE_OFFSET;
 import static com.falconcamp.cloud.rms.domain.service.dto.ICampDay.MAX_RESERV_DAYS;
+import static com.falconcamp.cloud.rms.web.controller.ReservationDtoDocDescription.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
+
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.restdocs.snippet.Attributes.key;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @Slf4j
@@ -135,41 +139,9 @@ class ReservationControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(content().json(dtoJson))
                 .andDo(document("v1/resv-get",
-                        pathParameters(parameterWithName("id").description("UUID of a Reservation to get.")),
-                        responseFields(
-                                fieldWithPath("id")
-                                        .description("Id of Reservation")
-                                        .type(UUID.class),
-                                fieldWithPath("version")
-                                        .description("Version number")
-                                        .type(Integer.class),
-                                fieldWithPath("createdDate")
-                                        .description("Creating time")
-                                        .type(OffsetDateTime.class),
-                                fieldWithPath("lastModifiedDate")
-                                        .description("Recent modified time")
-                                        .type(OffsetDateTime.class),
-                                fieldWithPath("fullName")
-                                        .description("Customer's full name")
-                                        .type(String.class),
-                                fieldWithPath("email")
-                                        .description("Customer's email")
-                                        .type(String.class),
-                                fieldWithPath("email")
-                                        .description("Customer's email")
-                                        .type(String.class),
-                                fieldWithPath("startDateTime")
-                                        .description("Start time")
-                                        .type(OffsetDateTime.class),
-                                fieldWithPath("arrivalDateTime")
-                                        .description("Arrive time")
-                                        .type(OffsetDateTime.class),
-                                fieldWithPath("depatureDateTime")
-                                        .description("Depature time")
-                                        .type(OffsetDateTime.class),
-                                fieldWithPath("days")
-                                        .description("The number of reserved days")
-                                        .type(Integer.class))));
+                        pathParameters(parameterWithName(FIELD_NAME_ID)
+                                .description("UUID of a Reservation to get")),
+                        responseFields(getFieldDescriptors())));
 
     } // End of test_Given_ID_When_Geting_Reservation_Then_Having_DTO_Back
 
@@ -258,8 +230,8 @@ class ReservationControllerIT {
                 ArgumentMatchers.any(ReservationDto.class)))
                 .willReturn(this.dto_2);
 
-        String expectedResponseMsg = String.format(
-                ReservationController.SUCCESSFULLY_PLACED_NEW_RESERVATION_MSG_TEMPLATE,
+        String expectedResponseMsg = String.format(ReservationController
+                        .SUCCESSFULLY_PLACED_NEW_RESERVATION_MSG_TEMPLATE,
                 this.id_1.toString());
 
         // When
@@ -269,7 +241,9 @@ class ReservationControllerIT {
                         .characterEncoding("UTF-8")
                         .content(reservationDtoJson))
                 .andExpect(status().isCreated())
-                .andExpect(content().string(expectedResponseMsg));
+                .andExpect(content().string(expectedResponseMsg))
+                .andDo(document("v1/resv-new",  requestFields(
+                        getRequestFieldDescriptors())));
     }
 
 }///:~
