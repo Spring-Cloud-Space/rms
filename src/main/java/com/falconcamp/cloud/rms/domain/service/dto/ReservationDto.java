@@ -45,6 +45,7 @@ public class ReservationDto implements IHaveCampDays, Comparable<ReservationDto>
     private OffsetDateTime lastModifiedDate;
 
     @NotBlank
+    @Size(min = 3, max = 100)
     private String fullName;
 
     @NotBlank
