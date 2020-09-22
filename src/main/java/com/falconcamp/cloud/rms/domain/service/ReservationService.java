@@ -31,6 +31,15 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 
 
+/*
+ * ISOLATION LEVEL	    DIRTY READ	    NON-REPEATABLE READ	    PHANTOM READ
+ * -----------------------------------------------------------------------------
+ * READ_UNCOMMITTED	    allowed	        allowed	                allowed
+ * READ_COMMITTED	    prevented	    allowed	                allowed
+ * REPEATABLE_READ	    prevented	    prevented	            allowed
+ * SERIALIZABLE	        prevented	    prevented	            prevented
+ *
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
