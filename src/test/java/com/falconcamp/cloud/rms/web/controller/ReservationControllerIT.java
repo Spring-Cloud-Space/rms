@@ -46,8 +46,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @Slf4j
-@AutoConfigureRestDocs(uriScheme = "${falconcamp.cloud.restdocs.url.scheme}",
-        uriHost = "${falconcamp.cloud.restdocs.url.host}",
+@AutoConfigureRestDocs(
+        uriScheme = "${test.url.scheme}",
+        uriHost = "${test.url.host}",
         uriPort = 8081)
 @ExtendWith(RestDocumentationExtension.class)
 @WebMvcTest(ReservationController.class)

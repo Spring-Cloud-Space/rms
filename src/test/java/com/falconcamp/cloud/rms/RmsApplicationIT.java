@@ -21,7 +21,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@Disabled
+//@Disabled
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("Programmatic-Transaction-Management Test - ")
@@ -57,7 +57,7 @@ class RmsApplicationIT {
         int expectedCount = 4;
 
         this.transactionTemplate.setIsolationLevel(
-                TransactionDefinition.ISOLATION_READ_COMMITTED);
+                TransactionDefinition.ISOLATION_SERIALIZABLE);
 
         // When
         List<Reservation> allReservation =
@@ -67,7 +67,7 @@ class RmsApplicationIT {
 
         long countInAug = allReservation.stream()
                 .filter(reservation -> reservation.getStartDateTime().isBefore(
-                        OffsetDateTime.of(2020, 9, 1,
+                        OffsetDateTime.of(2020, 10, 1,
                                 0, 0, 0, 0,
                                 ICampDay.DEFAULT_ZONE_OFFSET)))
                 .count();

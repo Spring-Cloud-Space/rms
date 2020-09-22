@@ -23,11 +23,8 @@ import static com.falconcamp.cloud.rms.domain.service.dto.CampDay.MAX_RESERV_DAY
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@Disabled
-@Slf4j
 @SpringBootTest
 @DisplayName("Reservation Mapper Test - ")
-// @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class IReservationMapperIT {
 

@@ -39,7 +39,7 @@ public class RmsBootstrap implements CommandLineRunner {
 
         // August
         OffsetDateTime startDateTime = OffsetDateTime.of(
-                LocalDateTime.of(2020, Month.AUGUST, 22,
+                LocalDateTime.of(2020, Month.SEPTEMBER, 27,
                         0, 0, 0), DEFAULT_ZONE_OFFSET);
 
         Reservation reserv0 = Reservation.builder()
@@ -54,7 +54,7 @@ public class RmsBootstrap implements CommandLineRunner {
 
         // September
         startDateTime = OffsetDateTime.of(
-                LocalDateTime.of(2020, Month.SEPTEMBER, 5,
+                LocalDateTime.of(2020, Month.OCTOBER, 5,
                         0, 0, 0), DEFAULT_ZONE_OFFSET);
 
         Reservation reserv1 = Reservation.builder()

@@ -25,8 +25,10 @@ public class PropertiesConfiguration {
     @Getter
     @Setter
     public static class RmsProperties {
+
         @NotBlank
         private String rmsServiceHost;
+
     }
 
 }///:~

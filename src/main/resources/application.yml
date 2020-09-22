@@ -62,8 +62,8 @@ logging:
 #      HikariConfig: DEBUG
 falconcamp:
   cloud:
-    restdocs:
-      url:
-        scheme: https
-        host: www.falconcamp.com
     rms-service-host: http://localhost
+test:
+  url:
+    scheme: https
+    host: www.falconcamp.com

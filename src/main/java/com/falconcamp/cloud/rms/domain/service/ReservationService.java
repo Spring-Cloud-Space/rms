@@ -100,7 +100,6 @@ public class ReservationService implements IReservationService {
 
     @Override
     @Transactional(isolation = SERIALIZABLE)
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public UUID cancelById(UUID id) {
         if (!reservationRepository.existsById(id)) {
             throw ReservationNotFoundException.of(id);
