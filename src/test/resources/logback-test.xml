@@ -1,0 +1,27 @@
+<configuration debug="false">
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%boldMagenta(%d{HH:mm:ss.SSS}) [%thread] %highlight(%-5level) %cyan(%logger{36}) - %boldYellow(%msg%n)</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.hibernate" level="INFO" />
+    <logger name="org.hibernate.SQL" level="DEBUG" />
+    <logger name="org.hibernate.type.descriptor.sql" level="TRACE" />
+
+    <logger name="com.yulikexuan.japlab" level="INFO" />
+
+    <!-- Turning down the wiremock logging -->
+    <logger name="com.github.tomakehurst.wiremock" level="INFO"/>
+    <logger name="wiremock.org" level="INFO"/>
+    <logger name="WireMock" level="INFO"/>
+
+    <!-- wiremock has per endpoint servlet logging -->
+    <logger name="/" level="INFO"/>
+
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>

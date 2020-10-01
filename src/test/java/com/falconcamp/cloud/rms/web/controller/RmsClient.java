@@ -24,7 +24,7 @@ final class RmsClient {
     ResponseEntity<String> updateReservation() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<ReservationDto> entity = new HttpEntity<ReservationDto>(
+        HttpEntity<ReservationDto> entity = new HttpEntity<>(
                 dto, headers);
         return this.restTemplate.exchange(this.url, HttpMethod.PUT,
                 entity, String.class);
